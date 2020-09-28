@@ -7,7 +7,7 @@ from opentracing.propagation import Format
 
 
 tracer = Tracer(
-    one_span_per_rpc=True,
+    one_span_per_rpc=False,
     service_name='wk_api_gateway',
     reporter=NullReporter(),
     sampler=ConstSampler(decision=True),
