@@ -1,7 +1,13 @@
 # fastapi-opentracing
 fastapi opentracing middleware works with istio
+install:
 
+```
+pip install fastapi-opentracing
+```
+   
 example:
+
 ```python
 from fastapi import FastAPI
 import uvicorn
