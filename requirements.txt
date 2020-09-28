@@ -1,0 +1,15 @@
+click==7.1.2
+fastapi==0.61.1
+h11==0.9.0
+httptools==0.1.1
+jaeger-client==4.3.0
+opentracing==2.3.0
+pydantic==1.6.1
+six==1.15.0
+starlette==0.13.6
+threadloop==1.0.2
+thrift==0.13.0
+tornado==6.0.4
+uvicorn==0.11.8
+uvloop==0.14.0
+websockets==8.1

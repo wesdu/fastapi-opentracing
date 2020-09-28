@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
   name="fastapi_opentracing",
-  version="0.0.1",
+  version="0.1",
   author="Du Wei",
   author_email="pandorid@gmail.com",
   description="fastapi opentracing middleware works on k8s",
