@@ -1,5 +1,5 @@
 # fastapi-opentracing
-fastapi opentracing middleware works on k8s
+fastapi opentracing middleware works with istio
 
 example:
 ```python
