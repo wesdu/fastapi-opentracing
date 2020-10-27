@@ -25,6 +25,6 @@ async def get_opentracing_span_headers():
             span_context=span,
             format=Format.HTTP_HEADERS,
             carrier=carrier)
-    for k, v in getattr(span, 'extra_headers', {}).items():
-        carrier[k] = v
+        for k, v in getattr(span, 'extra_headers', {}).items():
+            carrier[k] = v
     return carrier
