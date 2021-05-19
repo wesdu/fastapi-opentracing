@@ -1,10 +1,10 @@
 import typing
-from starlette.middleware.base import BaseHTTPMiddleware
+
+from fastapi_tools.middlewares import SimpleBaseMiddleware
 from opentracing.ext import tags
 from opentracing.propagation import Format
 from starlette.requests import Request
 from starlette.responses import Response
-from starlette.types import ASGIApp
 from . import tracer
 RequestResponseEndpoint = typing.Callable[[Request], typing.Awaitable[Response]]
 DispatchFunction = typing.Callable[
@@ -12,7 +12,7 @@ DispatchFunction = typing.Callable[
 ]
 
 
-class OpenTracingMiddleware(BaseHTTPMiddleware):
+class OpenTracingMiddleware(SimpleBaseMiddleware):
     _extra_headers = [
         # All applications should propagate x-request-id. This header is
         # included in access log statements and is used for consistent trace
@@ -60,7 +60,7 @@ class OpenTracingMiddleware(BaseHTTPMiddleware):
         'x-weike-node',
     ]
 
-    async def dispatch(self, request, call_next):
+    async def before_request(self, request: Request) -> [Response, None]:
         try:
             # Create a new span context, reading in values (traceid,
             # spanid, etc) from the incoming x-b3-*** headers.
@@ -90,7 +90,3 @@ class OpenTracingMiddleware(BaseHTTPMiddleware):
                 extra_headers[ihdr] = val
         with tracer.scope_manager.activate(span, True) as scope:
             setattr(span, 'extra_headers', extra_headers)
-            response = await call_next(request)
-            return response
-
-
