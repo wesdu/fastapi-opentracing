@@ -57,7 +57,7 @@ class OpenTracingMiddleware(SimpleBaseMiddleware):
 
         # Application-specific headers to forward.
         'user-agent',
-        'x-weike-node',
+        'x-weike-forward',
     ]
 
     async def before_request(self, request: Request) -> [Response, None]:
