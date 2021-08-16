@@ -30,7 +30,7 @@ if __name__ == "__main__":
 ```
 
 if your application uses tortoise-orm, you can execute the `install_all_patch` 
-to patch you SQLClient
+or specify the client `mysql_client.install_patch` to patch you SQLClient
 
 example:
 
@@ -66,7 +66,6 @@ install_all_patch()
 @app.get("/")
 async def root():
     carrier = await get_opentracing_span_headers()
-    res = await 
     return {'span': carrier}
 
 if __name__ == "__main__":
