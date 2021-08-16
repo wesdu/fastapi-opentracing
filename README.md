@@ -28,3 +28,47 @@ async def root():
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)
 ```
+
+if your application uses tortoise-orm, you can execute the `install_all_patch` 
+to patch you SQLClient
+
+example:
+
+```python
+from fastapi import FastAPI
+import uvicorn
+from fastapi_opentracing import get_opentracing_span_headers
+from fastapi_opentracing.middleware import OpenTracingMiddleware
+from fastapi_opentracing.client_hooks.mysql_client import install_patch
+from fastapi_opentracing.client_hooks import install_all_patch
+
+
+app = FastAPI()
+
+app.add_middleware(OpenTracingMiddleware)
+TORTOISE_ORM = {
+    "connections": {"default": "mysql://root:123456@127.0.0.1:3306/test"},
+    "apps": {
+        "models": {
+            "models": ["tests.models", "aerich.models"],
+            "default_connection": "default",
+        },
+    },
+}
+register_tortoise(
+    app,
+    config=TORTOISE_ORM,
+    generate_schemas=True
+)
+
+install_all_patch()
+
+@app.get("/")
+async def root():
+    carrier = await get_opentracing_span_headers()
+    res = await 
+    return {'span': carrier}
+
+if __name__ == "__main__":
+    uvicorn.run(app, host="0.0.0.0", port=8000)
+```

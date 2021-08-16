@@ -88,5 +88,8 @@ class OpenTracingMiddleware(SimpleBaseMiddleware):
             val = request.headers.get(ihdr)
             if val is not None:
                 extra_headers[ihdr] = val
-        with tracer.scope_manager.activate(span, True) as scope:
-            setattr(span, 'extra_headers', extra_headers)
+        tracer.scope_manager.activate(span, True)
+        setattr(span, 'extra_headers', extra_headers)
+
+    async def after_request(self, request: Request):
+        tracer.scope_manager.active.close()
