@@ -73,14 +73,14 @@ class OpenTracingMiddleware(SimpleBaseMiddleware):
             # spanid. We do this to propagate the headers verbatim.
             rpc_tag = {tags.SPAN_KIND: tags.SPAN_KIND_RPC_SERVER}
             span = tracer.start_span(
-                operation_name='op', child_of=span_ctx, tags=rpc_tag
+                operation_name='opentracing-middleware', child_of=span_ctx, tags=rpc_tag
             )
         except Exception as e:
             # We failed to create a context, possibly due to no
             # incoming x-b3-*** headers. Start a fresh span.
             # Note: This is a fallback only, and will create fresh headers,
             # not propagate headers.
-            span = tracer.start_span('op')
+            span = tracer.start_span('opentracing-middleware')
             # Keep this in sync with the headers in details and reviews.
         extra_headers = {}
 
@@ -88,5 +88,8 @@ class OpenTracingMiddleware(SimpleBaseMiddleware):
             val = request.headers.get(ihdr)
             if val is not None:
                 extra_headers[ihdr] = val
-        with tracer.scope_manager.activate(span, True) as scope:
-            setattr(span, 'extra_headers', extra_headers)
+        tracer.scope_manager.activate(span, True)
+        setattr(span, 'extra_headers', extra_headers)
+
+    async def after_request(self, request: Request):
+        tracer.scope_manager.active.close()
