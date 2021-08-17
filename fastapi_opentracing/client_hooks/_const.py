@@ -10,8 +10,8 @@ TRANS_TAGS = [BEGIN, COMMIT, ROLLBACK]
 
 '''database instance'''
 
-MYSQLDB = 'MySQLdb'
+MYSQLDB = 'mysql'
 
-PGDB = 'AsyncPgdb'
+PGDB = 'postgress'
 
-SQLITE = 'Sqlitedb'
+SQLITE = 'sqlite'

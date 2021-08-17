@@ -6,7 +6,7 @@ from fastapi_opentracing import tracer, get_current_span
 from ._const import TRANS_TAGS
 
 
-async def db_span(query: str, db_instance, db_type="SQL"):
+async def db_span(self, query: str, db_instance, db_type="SQL"):
     """
     Span for database
     """
@@ -25,6 +25,8 @@ async def db_span(query: str, db_instance, db_type="SQL"):
     span_tag[tags.DATABASE_STATEMENT] = statement
     span_tag[tags.DATABASE_TYPE] = db_type
     span_tag[tags.DATABASE_INSTANCE] = db_instance
+    span_tag[tags.DATABASE_USER] = self.user
+    span_tag[tags.PEER_ADDRESS] = f'{db_instance}://{self.host}:{self.port}/{self.database}'
     return start_child_span(
         operation_name=operation, tracer=tracer, parent=span, span_tag=span_tag
     )

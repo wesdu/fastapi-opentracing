@@ -44,19 +44,19 @@ item_list = [
 
 
 async def pg_execute_query_wrapper(self, query: str, values: Optional[list] = None):
-    with await db_span(query=query, db_instance=PGDB):
+    with await db_span(self, query=query, db_instance=PGDB):
         return await _tortoise_pg_client_execute_query(self, query, values)
 
 
 async def pg_execute_insert_wrapper(self, query: str, values: list):
-    with await db_span(query=query, db_instance=PGDB):
+    with await db_span(self, query=query, db_instance=PGDB):
         return await _tortoise_pg_client_execute_insert(self, query, values)
 
 
 async def pg_execute_query_dict_wrapper(
     self, query: str, values: Optional[list] = None
 ):
-    with await db_span(query=query, db_instance=PGDB):
+    with await db_span(self, query=query, db_instance=PGDB):
         return await _tortoise_pg_client_execute_query_dict(self, query, values)
 
 
@@ -64,22 +64,22 @@ async def pg_execute_query_dict_wrapper(
 
 
 async def pg_execute_many_wrapper(self, query: str, values: list):
-    with await db_span(query=query, db_instance=PGDB):
+    with await db_span(self, query=query, db_instance=PGDB):
         return await _tortoise_pg_client_execute_many(self, query, values)
 
 
 async def pg_trans_start_wrapper(self):
-    with await db_span(query=BEGIN, db_instance=PGDB):
+    with await db_span(self, query=BEGIN, db_instance=PGDB):
         return await _tortoise_pg_client_start(self)
 
 
 async def pg_trans_commit_wrapper(self):
-    with await db_span(query=COMMIT, db_instance=PGDB):
+    with await db_span(self, query=COMMIT, db_instance=PGDB):
         return await _tortoise_pg_client_commit(self)
 
 
 async def pg_trans_rollback_wrapper(self):
-    with await db_span(query=ROLLBACK, db_instance=PGDB):
+    with await db_span(self, query=ROLLBACK, db_instance=PGDB):
         return await _tortoise_pg_client_rollback(self)
 
 
