@@ -25,8 +25,12 @@ async def db_span(self, query: str, db_instance, db_type="SQL"):
     span_tag[tags.DATABASE_STATEMENT] = statement
     span_tag[tags.DATABASE_TYPE] = db_type
     span_tag[tags.DATABASE_INSTANCE] = db_instance
-    span_tag[tags.DATABASE_USER] = self.user
-    span_tag[tags.PEER_ADDRESS] = f'{db_instance}://{self.host}:{self.port}/{self.database}'
+    span_tag[tags.DATABASE_USER] = self.user if hasattr(self, "user") else self._parent.user
+    host = self.host if hasattr(self, "host") else self._parent.host
+    port = self.port if hasattr(self, "port") else self._parent.port
+    database = self.database if hasattr(self, "database") else self._parent.database
+    span_tag[tags.PEER_ADDRESS] = f'{db_instance}://{host}:{port}/{database}'
+    
     return start_child_span(
         operation_name=operation, tracer=tracer, parent=span, span_tag=span_tag
     )
