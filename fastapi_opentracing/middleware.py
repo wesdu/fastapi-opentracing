@@ -80,7 +80,10 @@ class OpenTracingMiddleware(SimpleBaseMiddleware):
             # incoming x-b3-*** headers. Start a fresh span.
             # Note: This is a fallback only, and will create fresh headers,
             # not propagate headers.
-            span = tracer.start_span('opentracing-middleware')
+            span = tracer.start_span('opentracing-middleware-new-trace')
+            span.log_event("error", repr(e))
+            span.log_kv({"message": "Failed to extract span context"})
+            span.log_kv({"stack": dict(request.headers)})
             # Keep this in sync with the headers in details and reviews.
         extra_headers = {}
 
