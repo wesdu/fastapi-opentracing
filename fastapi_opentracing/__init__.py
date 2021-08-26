@@ -15,6 +15,9 @@ import os
 #     scope_manager=ContextVarsScopeManager(),
 # )
 
+project_name = os.getenv("PROJECT_NAME", "PROJECT_NAME")
+namespace = os.getenv("NAMESPACE", "NAMESPACE")
+
 config = Config(
     config={  
         "sampler": {
@@ -26,7 +29,7 @@ config = Config(
         "propagation": "b3", # Compatible with istio
         "generate_128bit_trace_id": True, # Compatible with istio
     },
-    service_name=os.getenv("JAEGER_SERVICE_NAME", "NO_NAME"), # deployment.yaml will set this env for each service
+    service_name = f"{project_name}.{namespace}", # deployment.yaml will set this env for each service
     scope_manager=ContextVarsScopeManager(),
     validate=True,
 )
