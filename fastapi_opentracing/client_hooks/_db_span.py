@@ -36,6 +36,29 @@ async def db_span(self, query: str, db_instance, db_type="SQL"):
     )
 
 
+def redis_span(self, span, operation, statement, db_instance, db_type="redis"):
+    """
+    Span for redis
+    """
+    span_tag = {tags.SPAN_KIND: tags.SPAN_KIND_RPC_CLIENT}
+    span_tag[tags.DATABASE_STATEMENT] = statement
+    span_tag[tags.DATABASE_TYPE] = db_type
+    span_tag[tags.DATABASE_INSTANCE] = db_instance
+
+    self._statement = " "
+
+    host, port = self._pool_or_conn.address if hasattr(self._pool_or_conn, "address") else (" ", " ")
+    db = self._pool_or_conn.db if hasattr(self._pool_or_conn, "db") else " "
+    minsize = self._pool_or_conn.minsize if hasattr(self._pool_or_conn, "minsize") else " "
+    maxsize = self._pool_or_conn.maxsize if hasattr(self._pool_or_conn, "maxsize") else " "
+    span_tag[tags.PEER_ADDRESS] = f'redis://:{host}:{port}/{db}'
+    span_tag['redis.minsize'] = minsize
+    span_tag['redis.maxsize'] = maxsize
+
+    return start_child_span(
+        operation_name=operation, tracer=tracer, parent=span, span_tag=span_tag
+    )
+
 def start_child_span(operation_name: str, tracer=None, parent=None, span_tag=None):
     """
     Start a new span as a child of parent_span. If parent_span is None,

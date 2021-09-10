@@ -15,3 +15,5 @@ MYSQLDB = 'mysql'
 PGDB = 'postgress'
 
 SQLITE = 'sqlite'
+
+REDIS = 'redis'
