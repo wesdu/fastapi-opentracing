@@ -30,12 +30,17 @@ def excute_wrapper(self, command, *args, **kwargs):
         return _excute(self, command, *args, **kwargs)
     if isinstance(self._pool_or_conn, _RedisBuffer):
         return _excute(self, command, *args, **kwargs)
-    cmd = str(command, encoding="utf-8")
-    statement = json.dumps(dict(cmd=cmd, args=list(args)))
-    with redis_span(
-        self, span=span, operation=cmd, statement=statement, db_instance=REDIS
-    ):
+    try:
+        cmd = str(command, encoding="utf-8")
+        statement = json.dumps(dict(cmd=cmd, args=list(map(str, args))))
+    except Exception as e:
+        print(f'opentracing-error {repr(e)}')
         return _excute(self, command, *args, **kwargs)
+    else:
+        with redis_span(
+            self, span=span, operation=cmd, statement=statement, db_instance=REDIS
+        ):
+            return _excute(self, command, *args, **kwargs)
 
 
 def pipeline_wrapper(self):
