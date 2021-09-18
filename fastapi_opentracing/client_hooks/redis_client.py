@@ -55,7 +55,7 @@ def _send_pipeline(self, conn):
         for fut, cmd, args, kw in self._pipeline:
             try:
                 cmd = str(cmd, encoding="utf-8")
-                statement = json.dumps(dict(cmd=cmd, args=list(args)))
+                statement = json.dumps(dict(cmd=cmd, args=list(map(str, args))))
                 with redis_span(
                     self,
                     span=self._span,
