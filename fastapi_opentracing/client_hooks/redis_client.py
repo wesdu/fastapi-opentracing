@@ -13,6 +13,7 @@ except ImportError:
 else:
     _excute = aioredis.Redis.execute
     _pipeline = aioredis.Redis.pipeline
+    _multi_exec = aioredis.Redis.multi_exec
 
 
 try:
@@ -31,7 +32,7 @@ def excute_wrapper(self, command, *args, **kwargs):
     if isinstance(self._pool_or_conn, _RedisBuffer):
         return _excute(self, command, *args, **kwargs)
     try:
-        cmd = str(command, encoding="utf-8")
+        cmd = str(command, encoding="utf-8") if isinstance(command, bytes) else str(command)
         statement = json.dumps(dict(cmd=cmd, args=list(map(str, args))))
     except Exception as e:
         print(f'opentracing-error {repr(e)}')
@@ -42,6 +43,11 @@ def excute_wrapper(self, command, *args, **kwargs):
         ):
             return _excute(self, command, *args, **kwargs)
 
+def multi_exec_wrapper(self):
+    multi = _multi_exec(self)
+    span = sync_get_current_span()
+    multi._span = tracer.start_span(operation_name="MULTI_EXEC", child_of=span)
+    return multi
 
 def pipeline_wrapper(self):
     pipe = _pipeline(self)
@@ -54,7 +60,7 @@ def _send_pipeline(self, conn):
     with conn._buffered():
         for fut, cmd, args, kw in self._pipeline:
             try:
-                cmd = str(cmd, encoding="utf-8")
+                cmd = str(cmd, encoding="utf-8") if isinstance(cmd, bytes) else str(cmd)
                 statement = json.dumps(dict(cmd=cmd, args=list(map(str, args))))
                 with redis_span(
                     self,
@@ -85,7 +91,8 @@ async def _gather_result(self, return_exceptions):
             results.append(exc)
     if errors and not return_exceptions:
         raise self.error_class(errors)
-    self._span.finish()
+    if self._span:
+        self._span.finish()
     return results
 
 
@@ -94,6 +101,7 @@ def install_patch():
         raise Exception("aioredis import fail")
     aioredis.Redis.execute = excute_wrapper
     aioredis.Redis.pipeline = pipeline_wrapper
+    aioredis.Redis.multi_exec = multi_exec_wrapper
 
     aioredis.commands.transaction.Pipeline._send_pipeline = _send_pipeline
     aioredis.commands.transaction.Pipeline._gather_result = _gather_result
