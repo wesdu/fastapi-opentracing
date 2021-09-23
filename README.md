@@ -71,3 +71,12 @@ async def root():
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)
 ```
+
+Running tests
+```shell
+# first install fastapi-opentracing from local
+pip install -e .
+# install requirement
+pip install aioredis==1.3.1 pytest pytest-cov
+# run test
+pytest

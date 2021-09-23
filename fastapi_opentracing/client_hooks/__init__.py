@@ -1,6 +1,7 @@
 from . import mysql_client
 from . import pg_client
 from . import sqlite_client
+from . import redis_client
 try:
     import tortoise
 except Exception as e:
@@ -15,3 +16,4 @@ def install_all_patch():
     mysql_client.install_patch()
     pg_client.install_patch()
     sqlite_client.install_patch()
+    redis_client.install_patch()
