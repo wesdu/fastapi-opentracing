@@ -43,7 +43,6 @@ async def get_current_span():
         return scope.span
     return None
 
-
 def sync_get_current_span():
     scope = tracer.scope_manager.active
     if scope is not None:
