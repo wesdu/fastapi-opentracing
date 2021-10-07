@@ -1,7 +1,7 @@
 from typing import Optional
 from ._db_span import db_span
 from ._const import BEGIN, COMMIT, ROLLBACK, MYSQLDB
-from typing import Optional, Any, Callable, TypeVar
+from typing import Any, Callable, TypeVar
 from functools import wraps
 from tortoise.exceptions import (
     IntegrityError,
@@ -20,8 +20,7 @@ else:
     _tortoise_mysql_client_execute_insert = (
         tortoise.backends.mysql.client.MySQLClient.execute_insert
     )
-
-    '''transaction'''
+    """transaction"""
     _tortoise_mysql_client_execute_many = (
         tortoise.backends.mysql.client.TransactionWrapper.execute_many
     )
@@ -37,6 +36,7 @@ else:
 
 FuncType = Callable[..., Any]
 F = TypeVar("F", bound=FuncType)
+
 
 def translate_exceptions(func: F) -> F:
     @wraps(func)
@@ -56,19 +56,23 @@ def translate_exceptions(func: F) -> F:
 
     return translate_exceptions_  # type: ignore
 
+
 item_list = [
     "_tortoise_mysql_client_execute_query",
     "_tortoise_mysql_client_execute_insert",
     "_tortoise_mysql_client_execute_many",
     "_tortoise_mysql_client_start",
     "_tortoise_mysql_client_commit",
-    "_tortoise_mysql_client_rollback"
+    "_tortoise_mysql_client_rollback",
 ]
 
 
-async def mysql_execute_query_wrapper(self, query: str, values: Optional[list] = None):
+async def mysql_execute_query_wrapper(
+    self, query: str, values: Optional[list] = None
+):
     with await db_span(self, query, db_instance=MYSQLDB):
         return await _tortoise_mysql_client_execute_query(self, query, values)
+
 
 async def mysql_execute_insert_wrapper(self, query: str, values: list):
     with await db_span(self, query, db_instance=MYSQLDB):
@@ -76,7 +80,7 @@ async def mysql_execute_insert_wrapper(self, query: str, values: list):
 
 
 @translate_exceptions
-async def mysql_execute_many(self, query:str, values: Optional[list] = None):
+async def mysql_execute_many(self, query: str, values: Optional[list] = None):
     async with self.acquire_connection() as connection:
         self.log.debug("%s: %s", query, values)
         async with connection.cursor() as cursor:
@@ -87,17 +91,23 @@ async def mysql_execute_many(self, query:str, values: Optional[list] = None):
                     with await db_span(self, query, db_instance=MYSQLDB):
                         await cursor.executemany(query, values)
                 except Exception:
-                    with await db_span(self, query=ROLLBACK, db_instance=MYSQLDB):
+                    with await db_span(
+                        self, query=ROLLBACK, db_instance=MYSQLDB
+                    ):
                         await connection.rollback()
                     raise
                 else:
-                    with await db_span(self, query=COMMIT, db_instance=MYSQLDB):
+                    with await db_span(
+                        self, query=COMMIT, db_instance=MYSQLDB
+                    ):
                         await connection.commit()
             else:
                 with await db_span(self, query, db_instance=MYSQLDB):
                     await cursor.executemany(query, values)
 
+
 """transaction"""
+
 
 async def mysql_execute_many_wrapper(self, query: str, values: list):
     with await db_span(self, query=query, db_instance=MYSQLDB):
@@ -131,8 +141,7 @@ def install_patch():
     tortoise.backends.mysql.client.MySQLClient.execute_many = (
         mysql_execute_many
     )
-
-    '''transaction'''
+    """transaction"""
     tortoise.backends.mysql.client.TransactionWrapper.execute_many = (
         mysql_execute_many_wrapper
     )

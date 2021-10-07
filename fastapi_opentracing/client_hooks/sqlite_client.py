@@ -16,7 +16,6 @@ else:
     _tortoise_sqlite_client_execute_query_dict = (
         tortoise.backends.sqlite.client.SqliteClient.execute_query_dict
     )
-
     """transaction"""
     _tortoise_sqlite_client_execute_many = (
         tortoise.backends.sqlite.client.TransactionWrapper.execute_many
@@ -31,7 +30,6 @@ else:
         tortoise.backends.sqlite.client.TransactionWrapper.rollback
     )
 
-
 item_list = [
     "_tortoise_sqlite_client_execute_query",
     "_tortoise_sqlite_client_execute_insert",
@@ -43,21 +41,27 @@ item_list = [
 ]
 
 
-async def sqlite_execute_query_wrapper(self, query: str, values: Optional[list] = None):
+async def sqlite_execute_query_wrapper(
+    self, query: str, values: Optional[list] = None
+):
     with await db_span(self, query=query, db_instance=SQLITE):
         return await _tortoise_sqlite_client_execute_query(self, query, values)
 
 
 async def sqlite_execute_insert_wrapper(self, query: str, values: list):
     with await db_span(self, query=query, db_instance=SQLITE):
-        return await _tortoise_sqlite_client_execute_insert(self, query, values)
+        return await _tortoise_sqlite_client_execute_insert(
+            self, query, values
+        )
 
 
 async def sqlite_execute_query_dict_wrapper(
     self, query: str, values: Optional[list] = None
 ):
     with await db_span(self, query=query, db_instance=SQLITE):
-        return await _tortoise_sqlite_client_execute_query_dict(self, query, values)
+        return await _tortoise_sqlite_client_execute_query_dict(
+            self, query, values
+        )
 
 
 """transaction"""
@@ -95,7 +99,6 @@ def install_patch():
     tortoise.backends.sqlite.client.SqliteClient.execute_query_dict = (
         sqlite_execute_query_dict_wrapper
     )
-    
     """transaction"""
     tortoise.backends.sqlite.client.TransactionWrapper.execute_many = (
         sqlite_execute_many_wrapper
