@@ -16,7 +16,6 @@ else:
     _tortoise_pg_client_execute_query_dict = (
         tortoise.backends.asyncpg.client.AsyncpgDBClient.execute_query_dict
     )
-
     """transaction"""
     _tortoise_pg_client_execute_many = (
         tortoise.backends.asyncpg.client.TransactionWrapper.execute_many
@@ -31,7 +30,6 @@ else:
         tortoise.backends.asyncpg.client.TransactionWrapper.rollback
     )
 
-
 item_list = [
     "_tortoise_pg_client_execute_query",
     "_tortoise_pg_client_execute_insert",
@@ -43,7 +41,9 @@ item_list = [
 ]
 
 
-async def pg_execute_query_wrapper(self, query: str, values: Optional[list] = None):
+async def pg_execute_query_wrapper(
+    self, query: str, values: Optional[list] = None
+):
     with await db_span(self, query=query, db_instance=PGDB):
         return await _tortoise_pg_client_execute_query(self, query, values)
 
@@ -57,7 +57,9 @@ async def pg_execute_query_dict_wrapper(
     self, query: str, values: Optional[list] = None
 ):
     with await db_span(self, query=query, db_instance=PGDB):
-        return await _tortoise_pg_client_execute_query_dict(self, query, values)
+        return await _tortoise_pg_client_execute_query_dict(
+            self, query, values
+        )
 
 
 """transaction"""

@@ -1,19 +1,18 @@
-'''transaction tag'''
+"""transaction tag"""
 
-BEGIN = 'BEGIN'
+BEGIN = "BEGIN"
 
-COMMIT = 'COMMIT'
+COMMIT = "COMMIT"
 
-ROLLBACK = 'ROLLBACK'
+ROLLBACK = "ROLLBACK"
 
 TRANS_TAGS = [BEGIN, COMMIT, ROLLBACK]
+"""database instance"""
 
-'''database instance'''
+MYSQLDB = "mysql"
 
-MYSQLDB = 'mysql'
+PGDB = "postgress"
 
-PGDB = 'postgress'
+SQLITE = "sqlite"
 
-SQLITE = 'sqlite'
-
-REDIS = 'redis'
+REDIS = "redis"

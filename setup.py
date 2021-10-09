@@ -15,13 +15,15 @@ with open("README.md", "r") as fh:
 
 
 def read_requirements(filename):
-    return [line.strip() for line in read_file(filename).splitlines()
-          if not line.startswith('#')]
+    return [
+        line.strip() for line in read_file(filename).splitlines()
+        if not line.startswith('#')
+    ]
 
 
 setuptools.setup(
     name="fastapi_opentracing",
-    version="0.6.6",
+    version="0.6.7",
     author="Du Wei",
     author_email="pandorid@gmail.com",
     description="fastapi opentracing middleware works with istio",
@@ -32,9 +34,18 @@ setuptools.setup(
     packages=setuptools.find_packages(),
     install_requires=read_requirements('requirements.txt'),
     classifiers=[
-    "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.7",
-    "License :: OSI Approved :: MIT License",
-    "Operating System :: OS Independent",
+        "Programming Language :: Python :: 3",
+        "Programming Language :: Python :: 3.7",
+        "License :: OSI Approved :: MIT License",
+        "Operating System :: OS Independent",
     ],
+    test_suite='tests',
+    extras_require={
+        'tests': [
+            'pytest',
+            'pytest-cov',
+            'coverage',
+            'flake8',
+        ]
+    },
 )

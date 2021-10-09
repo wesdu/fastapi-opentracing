@@ -1,6 +1,5 @@
 from ._db_span import redis_span
 from ._const import REDIS
-import json
 import functools
 
 from fastapi_opentracing import sync_get_current_span
@@ -15,12 +14,10 @@ else:
     _pipeline = aioredis.Redis.pipeline
     _multi_exec = aioredis.Redis.multi_exec
 
-
 try:
     import ujson as json
-except:
+except Exception:
     import json
-
 
 from aioredis.commands.transaction import _RedisBuffer
 

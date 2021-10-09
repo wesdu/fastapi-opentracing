@@ -31,7 +31,6 @@ SentinelServer = namedtuple('SentinelServer',
                             'name tcp_address unixsocket version masters')
 
 # Public fixtures
-
 @pytest.fixture(autouse=True)
 def aioredis_patch():
     redis_client.install_patch()

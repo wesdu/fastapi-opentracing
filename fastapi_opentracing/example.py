@@ -11,7 +11,8 @@ app.add_middleware(OpenTracingMiddleware)
 @app.get("/")
 async def root():
     carrier = await get_opentracing_span_headers()
-    return {'span': carrier}
+    return {"span": carrier}
+
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)
