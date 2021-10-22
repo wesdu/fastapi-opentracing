@@ -6,11 +6,21 @@ from fastapi_opentracing import tracer, get_current_span
 from ._const import TRANS_TAGS
 
 
+class Context:
+    def __enter__(self):
+        pass
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        pass
+
+
 async def db_span(self, query: str, db_instance, db_type="SQL"):
     """
     Span for database
     """
     span = await get_current_span()
+    if span is None:
+        return Context()
     statement = query.strip()
     spance_idx = statement.find(" ")
     if query in TRANS_TAGS:
