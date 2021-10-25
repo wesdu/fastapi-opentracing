@@ -22,9 +22,16 @@ except Exception:
 from aioredis.commands.transaction import _RedisBuffer
 
 
-def fut_done(fut, span):
+async def fut_done(span=None):
     if span:
         span.finish()
+
+
+# Use the following function instead of add_done_callback()
+async def add_success_callback(fut, callback):
+    result = await fut
+    await callback()
+    return result
 
 
 def excute_wrapper(self, command, *args, **kwargs):
@@ -52,7 +59,7 @@ def excute_wrapper(self, command, *args, **kwargs):
             db_instance=REDIS,
         )
         fut = _excute(self, command, *args, **kwargs)
-        fut.add_done_callback(functools.partial(fut_done, span=exc_span))
+        fut = add_success_callback(fut, functools.partial(fut_done, exc_span))
         return fut
 
 
