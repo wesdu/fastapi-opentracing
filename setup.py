@@ -46,6 +46,8 @@ setuptools.setup(
             'pytest-cov',
             'coverage',
             'flake8',
+            'aioredis==1.3.1',
+            'tortoise-orm==0.16.17'
         ]
     },
 )
