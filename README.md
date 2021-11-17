@@ -73,7 +73,7 @@ if __name__ == "__main__":
 ```
 
 
-Makefile Usage
+Contributing and Developing
 
 To install all dependencies, run:
 ```shell
