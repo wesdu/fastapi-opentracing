@@ -5,6 +5,7 @@ from opentracing.ext import tags
 from opentracing.propagation import Format
 from starlette.requests import Request
 from starlette.responses import Response
+from starlette.datastructures import MutableHeaders
 from . import tracer
 
 RequestResponseEndpoint = typing.Callable[
@@ -95,3 +96,13 @@ class OpenTracingMiddleware(SimpleBaseMiddleware):
 
     async def after_request(self, request: Request):
         tracer.scope_manager.active.close()
+
+    async def send(self, message, send, request):
+        if message["type"] != "http.response.start":
+            await send(message)
+            return
+        headers = MutableHeaders(scope=message)
+        req_headers = {k.lower(): v for k, v in dict(request.headers).items()}
+        headers.append("x-b3-traceid", req_headers.get("x-b3-traceid", ""))
+        headers.append("x-b3-sampled", req_headers.get("x-b3-sampled", ""))
+        await send(message)
