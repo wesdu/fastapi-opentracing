@@ -23,7 +23,7 @@ def read_requirements(filename):
 
 setuptools.setup(
     name="fastapi_opentracing",
-    version="0.6.9",
+    version="0.7.0",
     author="Du Wei",
     author_email="pandorid@gmail.com",
     description="fastapi opentracing middleware works with istio",
