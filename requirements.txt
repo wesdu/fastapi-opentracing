@@ -2,4 +2,4 @@ fastapi==0.61.1
 jaeger-client==4.6.1
 opentracing==2.3.0
 uvicorn==0.11.8
-fastapi-base-tools==0.0.5
+fastapi-base-tools>=0.0.5
