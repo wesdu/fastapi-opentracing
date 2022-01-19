@@ -2,15 +2,15 @@ from . import mysql_client
 from . import pg_client
 from . import sqlite_client
 from . import redis_client
-# try:
-#     import tortoise
-# except Exception as e:
-#     raise e
-# else:
-#     res = tortoise.__version__.split(".")
-#     assert int(res[0]) == 0
-#     res.pop(0)
-#     assert 16.17 <= float(".".join(res)) <= 17.5
+try:
+    import tortoise
+except Exception as e:
+    raise e
+else:
+    res = tortoise.__version__.split(".")
+    assert int(res[0]) == 0
+    res.pop(0)
+    assert 16.17 <= float(".".join(res)) <= 18.1
 
 
 def install_all_patch():
