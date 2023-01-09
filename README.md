@@ -29,8 +29,8 @@ if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)
 ```
 
-if your application uses tortoise-orm, you can execute the `install_all_patch` 
-or specify the client `mysql_client.install_patch` to patch you SQLClient
+if your application uses tortoise-orm, you can specify the client 
+`mysql_client.install_patch` to patch you SQLClient
 
 example:
 
