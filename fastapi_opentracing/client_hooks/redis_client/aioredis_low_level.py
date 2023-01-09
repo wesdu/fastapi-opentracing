@@ -1,5 +1,5 @@
-from ._db_span import redis_span
-from ._const import REDIS
+from fastapi_opentracing.client_hooks._db_span import redis_span
+from fastapi_opentracing.client_hooks._const import REDIS
 import functools
 
 from fastapi_opentracing import sync_get_current_span
@@ -10,9 +10,10 @@ try:
 except ImportError:
     pass
 else:
-    _excute = aioredis.Redis.execute
+    _execute = aioredis.Redis.execute
     _pipeline = aioredis.Redis.pipeline
     _multi_exec = aioredis.Redis.multi_exec
+
 
 try:
     import ujson as json
@@ -37,9 +38,9 @@ async def add_success_callback(fut, callback):
 def excute_wrapper(self, command, *args, **kwargs):
     span = sync_get_current_span()
     if span is None:
-        return _excute(self, command, *args, **kwargs)
+        return _execute(self, command, *args, **kwargs)
     if isinstance(self._pool_or_conn, _RedisBuffer):
-        return _excute(self, command, *args, **kwargs)
+        return _execute(self, command, *args, **kwargs)
     try:
         cmd = (
             str(command, encoding="utf-8")
@@ -49,7 +50,7 @@ def excute_wrapper(self, command, *args, **kwargs):
         statement = json.dumps(dict(cmd=cmd, args=list(map(str, args))))
     except Exception as e:
         print(f"opentracing-error {repr(e)}")
-        return _excute(self, command, *args, **kwargs)
+        return _execute(self, command, *args, **kwargs)
     else:
         exc_span = redis_span(
             self,
@@ -58,7 +59,7 @@ def excute_wrapper(self, command, *args, **kwargs):
             statement=statement,
             db_instance=REDIS,
         )
-        fut = _excute(self, command, *args, **kwargs)
+        fut = _execute(self, command, *args, **kwargs)
         fut = add_success_callback(fut, functools.partial(fut_done, exc_span))
         return fut
 
@@ -124,8 +125,6 @@ async def _gather_result(self, return_exceptions):
 
 
 def install_patch():
-    if "aioredis" not in globals():
-        raise Exception("aioredis import fail")
     aioredis.Redis.execute = excute_wrapper
     aioredis.Redis.pipeline = pipeline_wrapper
     aioredis.Redis.multi_exec = multi_exec_wrapper
