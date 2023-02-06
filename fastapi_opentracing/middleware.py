@@ -73,6 +73,7 @@ class OpenTracingMiddleware(SimpleBaseMiddleware):
             # application tag
             rpc_tag['framework'] = 'Fastapi'
             rpc_tag['uri'] = request.url._url.split("?")[0]
+            rpc_tag['method'] = request.method
 
             span = tracer.start_span(
                 operation_name="opentracing-middleware",
