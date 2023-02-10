@@ -85,6 +85,31 @@ def redis_span(self, span, operation, statement, db_instance, db_type="redis"):
     )
 
 
+async def redis_span_high_level(
+    self, span, operation, statement, db_instance, db_type="redis"
+):
+    """
+    Span for redis high level
+    """
+    span_tag = {tags.SPAN_KIND: tags.SPAN_KIND_RPC_CLIENT}
+    span_tag[tags.DATABASE_STATEMENT] = statement
+    span_tag[tags.DATABASE_TYPE] = db_type
+    span_tag[tags.DATABASE_INSTANCE] = db_instance
+
+    conn_kwargs = self.connection_pool.connection_kwargs
+    db = conn_kwargs.get("db", 0)
+    host = conn_kwargs.get("host", "localhost")
+    port = conn_kwargs.get("port", 6379)
+    max_connections = conn_kwargs.get("max_connections", "")
+
+    span_tag[tags.PEER_ADDRESS] = f"redis://:{host}:{port}/{db}"
+    span_tag["redis.maxsize"] = max_connections
+
+    return start_child_span(
+        operation_name=operation, tracer=tracer, parent=span, span_tag=span_tag
+    )
+
+
 def start_child_span(
     operation_name: str, tracer=None, parent=None, span_tag=None
 ):

@@ -15,3 +15,7 @@ test:
 .PHONY: lint
 lint:
 	$(flake8) $(project)
+
+.PHONY: clean
+clean:
+	rm -r build dist fastapi_opentracing.egg-info

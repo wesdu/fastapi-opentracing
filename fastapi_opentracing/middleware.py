@@ -69,7 +69,12 @@ class OpenTracingMiddleware(SimpleBaseMiddleware):
             # a child span. It will use the incoming traceid and
             # spanid. We do this to propagate the headers verbatim.
             rpc_tag = {tags.SPAN_KIND: tags.SPAN_KIND_RPC_SERVER}
+
+            # application tag
             rpc_tag['framework'] = 'Fastapi'
+            rpc_tag['uri'] = request.url._url.split("?")[0]
+            rpc_tag['method'] = request.method
+
             span = tracer.start_span(
                 operation_name="opentracing-middleware",
                 child_of=span_ctx,
